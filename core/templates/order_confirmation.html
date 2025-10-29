@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Order #{{ order.order_id }} Confirmed{% endblock %}
+
+{% block extra_css %}
+<style>
+    .order-summary {
+        margin-top: 20px;
+    }
+    .order-summary h3 {
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+    }
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #f4f4f4;
+    }
+    .summary-item .name {
+        font-weight: 500;
+    }
+    .driver-info {
+        background-color: #f4f4f4;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+    .driver-info p {
+        margin: 5px 0;
+        font-size: 1.1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Order Confirmed!</h2>
+    <p>Thank you for your order. Your food is on its way!</p>
+
+    <div class="driver-info">
+        <h3>Driver Information</h3>
+        <p><strong>Driver:</strong> {{ assignment.employee.employee_name }}</p>
+        <p><strong>Vehicle:</strong> {{ assignment.vehicle.type }} ({{ assignment.vehicle.registration_number }})</p>
+        <p><strong>Contact:</strong> {{ assignment.employee.phone }}</p>
+    </div>
+
+    <div class="order-summary">
+        <h3>Order Summary (ID: {{ order.order_id }})</h3>
+        <p><strong>Restaurant:</strong> {{ order.restaurant.name }}</p>
+        <p><strong>Payment Method:</strong> {{ order.payment.payment_type }}</p>
+
+        <h4>Items:</h4>
+        {% for item in items %}
+            <div class="summary-item">
+                <span class="name">{{ item.item.item_name }} (x{{ item.quantity }})</span>
+                <span class="price">₹{{ item.item.price }}</span>
+            </div>
+        {% endfor %}
+
+        <div class="summary-item" style="font-weight: bold; font-size: 1.2rem; margin-top: 10px;">
+            <span>Total</span>
+            <span>₹{{ order.total_price|floatformat:2 }}</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

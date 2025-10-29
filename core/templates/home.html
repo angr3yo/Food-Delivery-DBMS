@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Restaurants | Food Delivery{% endblock %}
+
+{% block extra_css %}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+    th, td {
+        text-align: left;
+        padding: 12px 10px;
+        border-bottom: 1px solid #eee;
+    }
+    th {
+        background-color: #f4f4f4;
+        color: #555;
+    }
+    tr:hover {
+        background-color: #fafafa;
+    }
+    td a {
+        color: #ff5c5c;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    td a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Available Restaurants</h2>
+    {% if restaurants %}
+    <table>
+        <thead>
+            <tr>
+                <th>Restaurant ID</th>
+                <th>Name</th>
+                <th>Cuisine</th>
+                <th>Menu</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in restaurants %}
+            <tr>
+                <td>{{ r.restaurant_id }}</td>
+                <td>{{ r.name }}</td>
+                <td>{{ r.cuisine }}</td>
+                <!-- Use Django ORM object properties -->
+                <td><a href="{% url 'menu' r.restaurant_id %}">View Menu 🍲</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No restaurants found.</p>
+    {% endif %}
+</div>
+{% endblock %}
+

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ restaurant.name }} | Menu{% endblock %}
+
+{% block extra_css %}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+    th, td {
+        text-align: left;
+        padding: 12px 10px;
+        border-bottom: 1px solid #eee;
+    }
+    th {
+        background-color: #f4f4f4;
+        color: #555;
+    }
+    tr:hover {
+        background-color: #fafafa;
+    }
+    .btn-add-cart {
+        padding: 8px 12px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+    .btn-add-cart:hover {
+        background-color: #218838;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ restaurant.name }}</h2>
+    <p style="color: #666; margin-top: -10px;">{{ restaurant.cuisine }}</p>
+
+    {% if menu_items %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price (₹)</th>
+                <th>Add to Cart</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in menu_items %}
+            <tr>
+                <td><strong>{{ item.item_name }}</strong></td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.price }}</td>
+                <td>
+                    <!-- THIS IS THE NEW "ADD TO CART" FORM -->
+                    <!-- FIX: Pass item.item_id to the url tag -->
+                    <form action="{% url 'add_to_cart' item.item_id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-add-cart">Add to Cart</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No menu items found for this restaurant.</p>
+    {% endif %}
+
+</div>
+{% endblock %}
+

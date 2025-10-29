@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Food Delivery{% endblock %}
+
+{% block content %}
+
+<!-- This style block is specific to this page -->
+<style>
+    .form-container {
+        max-width: 450px;
+        margin: 40px auto;
+        padding: 30px;
+    }
+    .form-container h2 {
+        text-align: center;
+        margin-top: 0;
+        margin-bottom: 25px;
+        color: #333;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #555;
+    }
+    .form-group input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-sizing: border-box; /* Important for padding to work with 100% width */
+    }
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        background-color: #ff5c5c;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .btn-submit:hover {
+        background-color: #ff3b3b;
+    }
+    .form-footer {
+        text-align: center;
+        margin-top: 20px;
+        color: #555;
+    }
+    .form-footer a {
+        color: #ff5c5c;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .form-footer a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<!-- This uses the .container class from base.html -->
+<div class="container form-container">
+    <h2>Login to Your Account</h2>
+    
+    {% if form.errors %}
+        <p style="color: red; text-align: center;">Your username and password didn't match. Please try again.</p>
+    {% endif %}
+
+    <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_username">Username</label>
+            {{ form.username }}
+        </div>
+        <div class="form-group">
+            <label for="id_password">Password</label>
+            {{ form.password }}
+        </div>
+        <button type="submit" class="btn-submit">Login</button>
+    </form>
+
+    <div class="form-footer">
+        <p>Don't have an account? <a href="{% url 'signup' %}">Sign up here</a></p>
+    </div>
+</div>
+
+{% endblock %}

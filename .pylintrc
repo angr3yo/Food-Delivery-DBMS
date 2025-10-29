@@ -1,0 +1,79 @@
+[MASTER]
+
+
+init-hook='import os; os.environ["DJANGO_SETTINGS_MODULE"] = "fooddelivery_project.settings"'
+
+load-plugins=pylint_django
+django-settings-module=fooddelivery_project.settings
+
+ignore=CVS,migrations,venv,__pycache__,manage.py,settings.py
+jobs=4
+py-version=3.12
+persistent=yes
+
+[MESSAGES CONTROL]
+
+
+disable=
+
+    missing-docstring,
+    invalid-name,
+    too-few-public-methods,
+    too-many-arguments,
+    too-many-locals,
+    too-many-instance-attributes,
+    too-many-return-statements,
+    too-many-branches,
+    too-many-statements,
+    duplicate-code,
+    useless-super-delegation,
+    fixme,
+    logging-fstring-interpolation,
+    consider-using-f-string,
+    broad-except,
+    import-error,
+    unsubscriptable-object,
+    unnecessary-pass,
+    missing-class-docstring,
+    missing-function-docstring,
+    no-member,imported-auth-user,
+    C0114,  # missing-module-docstring
+    C0115,  # missing-class-docstring
+    C0116,  # missing-function-docstring
+    C0301,  # line-too-long
+    R0903  # too-few-public-methods
+
+
+[FORMAT]
+max-line-length=100
+
+[BASIC]
+good-names=i,j,k,ex,pk,id,qs,db,obj,_,x,y
+bad-names=foo,bar,baz,toto,tutu,tata
+argument-naming-style=snake_case
+function-naming-style=snake_case
+method-naming-style=snake_case
+variable-naming-style=snake_case
+class-naming-style=PascalCase
+module-naming-style=snake_case
+const-naming-style=UPPER_CASE
+
+[TYPECHECK]
+# Ignore missing Django ORM members like `objects`, `DoesNotExist`, etc.
+ignored-classes=optparse.Values,thread._local,_thread._local,argparse.Namespace,Manager,QuerySet,User,Model,objects
+ignore-none=yes
+ignore-on-opaque-inference=yes
+
+[DESIGN]
+max-args=10
+max-locals=20
+max-branches=15
+max-statements=70
+min-public-methods=1
+
+[REPORTS]
+score=yes
+reports=no
+
+[EXCEPTIONS]
+overgeneral-exceptions=builtins.Exception,builtins.BaseException

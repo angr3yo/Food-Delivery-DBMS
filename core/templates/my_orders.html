@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}My Order History{% endblock %}
+
+{% block extra_css %}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+th, td {
+    text-align: left;
+    padding: 12px 10px;
+    border-bottom: 1px solid #eee;
+}
+th {
+    background-color: #f2f2f2; /* Light grey header */
+    color: #333;
+    font-weight: 600;
+}
+tr:hover {
+    background-color: #f9f9f9; /* Lighter hover */
+}
+a {
+    color: #d9534f; /* Match theme color */
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+h2 {
+    color: #333;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <h2>My Order History</h2>
+
+    {% if orders %}
+    <table>
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Restaurant</th>
+                <th>Total Price</th>
+                {# Ensure no 'Date' column header exists here #}
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.order_id }}</td>
+                <td>{{ order.restaurant.name }}</td>
+                <td>₹{{ order.total_price|floatformat:2 }}</td>
+                {# Ensure no '{{ order.order_date }}' exists here #}
+                <td><a href="{% url 'order_confirmation' order.order_id %}">View Details</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>You haven't placed any orders yet.</p>
+    {% endif %}
+
+    <a href="{% url 'home' %}" class="back" style="margin-top: 20px; display: inline-block;">Back to Restaurants</a> {# Added some margin #}
+</div>
+{% endblock %}
+
