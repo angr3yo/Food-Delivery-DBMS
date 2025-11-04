@@ -7,12 +7,34 @@ This project integrates restaurants, customers, orders, and delivery management 
 
 ## 🚀 Features
 
-### 👤 Customer Side
-- User registration and login  
-- Browse restaurants and menu items  
-- Add items to cart and place orders  
-- Select preferred payment method (Cash, Card, UPI, etc.)  
-- View order confirmation and driver assignment details  
+### 🧍 **User & Customer Management**
+- `auth_user` used for login/signup.
+- Linked `Customers` table for user profile (phone, DOB, gender).
+- `Customer_Addresses` allows multiple addresses per user.
+### 🍴 **Restaurant and Menu**
+- `Restaurants` linked to `Address` for location.
+- `Menu_Items` mapped to restaurants via `Restaurant_id`.
+- Supports multiple cuisines, dynamic pricing, and categories.
+
+### 🛒 **Order Workflow**
+- Orders are placed by customers for a single restaurant.
+- `Order_Items` joins `Orders` with `Menu_Items` to capture quantity and price.
+- Total price recalculated automatically via triggers or Django ORM logic.
+
+### 💳 **Payment System**
+- `Payment_Methods` stores customer payment preferences (UPI, Card, or Cash).
+- Tracks `Total_Spend` for each customer and payment type.
+- Automatically updated after every successful order. 
+- Supports multiple payment types per customer  
+  
+### 🚚 **Delivery Assignment**
+- `Employees` table stores staff info (drivers, managers).
+- `Vehicles` stores vehicle type (bike, EV, etc.) and registration.
+- `Order_Assignment` links each order to a driver and vehicle.
+### 🚗 Delivery System
+- Dynamic driver assignment using SQL **stored procedures**  
+- Vehicle and driver information displayed upon confirmation  
+
 <img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/aa932004-37cb-4a63-a145-822e0706e572" />
 <img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/06c426ca-03ff-4709-b1e5-4c7e0bbd4b24" />
 <img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/f96585e5-4bd1-4a16-9b12-4bc01219586f" />
@@ -21,20 +43,11 @@ This project integrates restaurants, customers, orders, and delivery management 
 <img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/1fba64fa-dcae-445a-814e-76e871198d10" />
 <img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/19c850f2-20a3-404d-b2c0-2c637de8adb0" />
 
-### 🍽️ Restaurant Management
-- Add, edit, and manage restaurant menus  
-- Track orders and sales  
-- Monitor total spends from different payment types  
+ 
 <img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/749462c3-a36e-4652-adb9-72e808fe619c" />
 
-### 🚗 Delivery System
-- Dynamic driver assignment using SQL **stored procedures**  
-- Vehicle and driver information displayed upon confirmation  
 
-### 💳 Payment System
-- Secure payment tracking through `Payment_Methods` table  
-- Supports multiple payment types per customer  
-- Automatically updates `total_spend` on each order  
+
 
 ---
 
@@ -50,24 +63,62 @@ This project integrates restaurants, customers, orders, and delivery management 
 
 ---
 
-## 🗄️ Database Schema Overview
+## 🗄️ Database: `FoodDelivery`
 
-### Key Tables:
-- `Customers`
-- `Restaurants`
-- `Menu_Items`
-- `Orders`
-- `Order_Items`
-- `Payment_Methods`
-- `Employees`
-- `Vehicles`
-- `Order_Assignment`
+### 📦 Main Tables Overview
+
+| Table | Description |
+|--------|-------------|
+| **auth_user** | Default Django user table (login credentials and permissions) |
+| **Customers** | Stores customer details linked to `auth_user` |
+| **Customer_Addresses** | Customer delivery addresses (FK to `Customers`) |
+| **Restaurants** | Registered restaurants with cuisine type and location |
+| **Menu_Items** | Menu items offered by restaurants with price and category |
+| **Orders** | Customer orders containing total price, status, and payment |
+| **Order_Items** | Items within each order (with quantity and price mapping) |
+| **Payment_Methods** | Tracks payment type (UPI/Card/Cash) and total spend per customer |
+| **Employees** | Staff members, including delivery drivers |
+| **Vehicles** | Vehicles assigned to employees for order delivery |
+| **Order_Assignment** | Maps orders to assigned employees and vehicles |
+| **Address** | Stores location details (used for restaurants/customers) |
+
 
 ### Highlights:
-- **Triggers** and **Stored Procedures**:
-  - `AssignOrderDriver` → Assigns a random driver & vehicle for every new order  
-  - Enforces referential integrity with **foreign keys**
-- **Unique constraints** for `(Customer, Payment_type)` to prevent duplicates  
+## 🔁 Triggers, Procedures, and Functions (Database Automation)
+
+### ⚙️ Stored Triggers
+
+| Trigger | Purpose |
+|----------|----------|
+| **trg_UpdateTotalSpend_AfterOrderUpdate** | Automatically updates `Payment_Methods.Total_Spend` after each successful order |
+| **trg_ValidateOrderItemRestaurant** | Prevents items from multiple restaurants being added to one order |
+| **trg_AutoTimestamp_OrderAssignment** | Automatically sets `Assignment_Time` when an order is assigned to a driver |
+
+---
+
+### 🧮 Stored Procedures
+
+| Procedure | Purpose |
+|------------|----------|
+| **AssignOrderDriver(order_id INT, driver_id INT)** | Assigns a driver and corresponding vehicle to a given order |
+| **sp_RecalcOrderTotal(order_id INT)** | Recalculates total order price using `Order_Items` and updates `Orders.Total_Price` |
+| **sp_UpdateCustomerSpend(customer_id INT)** | Updates `Payment_Methods.Total_Spend` for a customer after each completed payment |
+
+---
+
+### 🧠 SQL Functions
+
+| Function | Returns | Purpose |
+|-----------|----------|----------|
+| **fn_GetRestaurantRevenue(restaurant_id INT)** | `DECIMAL(10,2)` | Calculates total revenue earned by a specific restaurant |
+| **fn_GetCustomerTotalSpend(customer_id INT)** | `DECIMAL(10,2)` | Returns total spend of a given customer across all payment types |
+| **fn_GetAverageDeliveryTime(driver_id INT)** | `INT` (minutes) | Calculates average delivery time handled by a driver |
+| **fn_GetOrderItemCount(order_id INT)** | `INT` | Returns total number of items within a specific order |
+| **fn_CalculateDiscount(total DECIMAL(10,2))** | `DECIMAL(10,2)` | Applies conditional discount logic (e.g., 10% off if total > ₹500) |
+
+---
+
+🧩 *These database-level automations help maintain data integrity, enforce business rules, and keep analytics real-time without extra Django overhead.*
 
 ---
 
