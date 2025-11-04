@@ -1,127 +1,157 @@
 {% extends 'base.html' %}
-
-{% block title %}Your Cart{% endblock %}
-
-{% block extra_css %}
-<style>
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-    }
-    th, td {
-        text-align: left;
-        padding: 12px 10px;
-        border-bottom: 1px solid #eee;
-    }
-    th {
-        background-color: #f4f4f4;
-        color: #555;
-    }
-    .cart-total {
-        margin-top: 20px;
-        text-align: right;
-    }
-    .cart-total h3 {
-        font-size: 1.5rem;
-        color: #333;
-    }
-    .btn-place-order {
-        padding: 12px 20px;
-        background-color: #ff5c5c;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        font-size: 1.1rem;
-        font-weight: bold;
-        cursor: pointer;
-        text-decoration: none;
-    }
-    .btn-place-order:hover {
-        background-color: #ff3b3b;
-    }
-    .btn-remove {
-        padding: 5px 10px;
-        background-color: #dc3545;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        text-decoration: none;
-        font-size: 0.9rem;
-    }
-    .payment-section {
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid #eee;
-    }
-    .payment-section label {
-        font-weight: 500;
-        margin-right: 10px;
-    }
-    .payment-section select {
-        padding: 8px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-    }
-</style>
-{% endblock %}
+{% load static %}
+{% load custom_tags %}
 
 {% block content %}
-<div class="container">
-    {% if cart_items %}
-        <h2>Your Cart (from: {{ restaurant_name }})</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                    <th>Remove</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in cart_items %}
-                <tr>
-                    <td>{{ item.name }}</td>
-                    <td>₹{{ item.price }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>₹{{ item.total|floatformat:2 }}</td>
-                    <td>
-                        <!-- FIX: Pass item.id to the url tag -->
-                        <a href="{% url 'remove_from_cart' item.id %}" class="btn-remove">Remove</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
 
-        <div class="cart-total">
-            <h3>Total: ₹{{ total_price|floatformat:2 }}</h3>
+<style>
+  body {
+    /* This might be inherited from base.html, but keeping it just in case */
+    background-color: #fff8f6; 
+    font-family: 'Poppins', sans-serif;
+  }
+  .cart-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 25px;
+  }
+  .cart-header {
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: #e63946;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .cart-item {
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .cart-item:last-child {
+    border-bottom: none;
+  }
+  .cart-item img {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin-right: 15px;
+  }
+  .item-info {
+    flex-grow: 1;
+  }
+  .item-name {
+    font-weight: 600;
+    color: #333;
+  }
+  .item-price {
+    color: #e63946;
+    font-weight: 500;
+  }
+  .quantity-controls a {
+    display: inline-block;
+    border: none;
+    background-color: #e63946;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-weight: bold;
+    line-height: 32px; /* Vertically centers the text */
+    text-align: center;
+    text-decoration: none;
+    user-select: none; /* Prevents text selection on click */
+  }
+  .quantity-controls a:hover {
+    background-color: #d62828;
+  }
+  .quantity-display {
+    width: 35px;
+    text-align: center;
+    font-weight: 500;
+    display: inline-block;
+    margin: 0 5px; /* Added some spacing */
+  }
+  .total-section {
+    text-align: right;
+    margin-top: 20px;
+    font-size: 1.1rem;
+  }
+  .place-order-btn { /* This class wasn't used, but I assume it's for the submit button */
+    background-color: #e63946;
+    border: none;
+    border-radius: 25px;
+    color: #fff;
+    padding: 10px 25px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
+  .place-order-btn:hover {
+    background-color: #d62828;
+  }
+</style>
+
+<div class="cart-container">
+  <div class="cart-header">Your Cart 🛒</div>
+
+  {% if cart_items %}
+    {% for item in cart_items %}
+    <div class="cart-item">
+      <div class="d-flex align-items-center">
+        
+        <div class="item-info">
+          <div class="item-name">{{ item.name }}</div>
+          <div class="item-price">₹{{ item.price }}</div>
         </div>
+      </div>
 
-        <div class="payment-section">
-            <form action="{% url 'place_order' %}" method="POST">
-                {% csrf_token %}
-                <label for="payment_id">Choose Payment Method:</label>
-                <select name="payment_id" id="payment_id" required>
-                    {% for pm in payment_methods %}
-                        <option value="{{ pm.payment_id }}">{{ pm.payment_type }}</option>
-                    {% endfor %}
-                </select>
-                
-                <button type="submit" class="btn-place-order" style="margin-left: 15px;">
-                    Place Order
-                </button>
-            </form>
-        </div>
+      <div class="quantity-controls me-3">
+        <a href="{% url 'update_quantity' item.id 'decrease' %}">-</a>
+        <span class="quantity-display">{{ item.quantity }}</span>
+        <a href="{% url 'update_quantity' item.id 'increase' %}">+</a>
+      </div>
+    </div>
+    {% endfor %}
 
-    {% else %}
-        <h2>Your Cart is Empty</h2>
-        <p>Looks like you haven't added any items to your cart yet.</p>
-        <a href="{% url 'home' %}" class="btn-place-order" style="text-decoration: none; display: inline-block; margin-top: 10px;">Start Ordering</a>
-    {% endif %}
+    <div class="total-section">
+      <strong>Total:</strong> ₹{{ total_price }}
+    </div>
+
+    <div class="text-end mt-3">
+      <form method="POST" action="{% url 'place_order' %}">
+        {% csrf_token %}
+        
+        <h3 class="mb-3">Select Payment Method</h3>
+        <select name="payment_type" class="form-select mb-3" required>
+          <option value="" disabled selected>Choose a payment method...</option>
+          {% for type in payment_methods %}
+            <option value="{{ type }}">{{ type }}</option>
+          {% endfor %}
+
+        </select>
+    
+        <hr>
+        <h3>Order Summary</h3>
+        <ul class="text-start">
+          {% for item in cart_items %}
+            <li>{{ item.name }} × {{ item.quantity }} — ₹{{ item.total }}</li>
+          {% endfor %}
+        </ul>
+        <p><strong>Total:</strong> ₹{{ total_price }}</p>
+    
+        <button type="submit" class="btn place-order-btn">Place Order</button>
+      </form>
+    </div>
+    
+
+  {% else %}
+    <p class="text-center text-muted my-4">Your cart is empty 😢</p>
+  {% endif %}
 </div>
-{% endblock %}
 
+{% endblock %}

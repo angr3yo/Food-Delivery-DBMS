@@ -21,28 +21,47 @@
         font-weight: 500;
     }
     .driver-info {
-        background-color: #f4f4f4;
+        background-color: #f9f9f9;
         padding: 20px;
-        border-radius: 8px;
+        border-radius: 10px;
         margin-top: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .driver-info h3 {
+        margin-bottom: 10px;
+        font-size: 1.3rem;
     }
     .driver-info p {
-        margin: 5px 0;
-        font-size: 1.1rem;
+        margin: 6px 0;
+        font-size: 1.05rem;
+    }
+    .item-line {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px dashed #ddd;
+    }
+    .item-line .qty {
+        color: #777;
+        font-size: 0.95rem;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container">
-    <h2>Order Confirmed!</h2>
+    <h2>🎉 Order Confirmed!</h2>
     <p>Thank you for your order. Your food is on its way!</p>
 
     <div class="driver-info">
         <h3>Driver Information</h3>
-        <p><strong>Driver:</strong> {{ assignment.employee.employee_name }}</p>
-        <p><strong>Vehicle:</strong> {{ assignment.vehicle.type }} ({{ assignment.vehicle.registration_number }})</p>
-        <p><strong>Contact:</strong> {{ assignment.employee.phone }}</p>
+        {% if assignment %}
+            <p><strong>Driver:</strong> {{ assignment.employee.name }}</p>
+            <p><strong>Contact:</strong> {{ assignment.employee.phone }}</p>
+            <p><strong>Vehicle:</strong> {{ assignment.vehicle.type }} ({{ assignment.vehicle.registration_number }})</p>
+        {% else %}
+            <p>No driver has been assigned yet. Please wait a few moments.</p>
+        {% endif %}
     </div>
 
     <div class="order-summary">
@@ -52,9 +71,9 @@
 
         <h4>Items:</h4>
         {% for item in items %}
-            <div class="summary-item">
-                <span class="name">{{ item.item.item_name }} (x{{ item.quantity }})</span>
-                <span class="price">₹{{ item.item.price }}</span>
+            <div class="item-line">
+                <span class="name">{{ item.name }} <span class="qty">(x{{ item.quantity }})</span></span>
+                <span>₹{{ item.price|floatformat:2 }}</span>
             </div>
         {% endfor %}
 
@@ -65,4 +84,3 @@
     </div>
 </div>
 {% endblock %}
-

@@ -1,20 +1,12 @@
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 from django.contrib.auth.models import User
+from decimal import Decimal
 
-
-# This new Profile model links Django's User to your Customer/Employee tables
+# ----------------------------
+# User Profile (same as before)
+# ----------------------------
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    # Link to your existing Customer/Employee tables
-    # These are nullable because a user is EITHER a customer OR an employee
     customer_profile = models.OneToOneField(
         'Customers', on_delete=models.CASCADE, null=True, blank=True)
     employee_profile = models.OneToOneField(
@@ -24,8 +16,7 @@ class Profile(models.Model):
         ('CUSTOMER', 'Customer'),
         ('ADMIN', 'Admin'),
     )
-    role = models.CharField(
-        max_length=10, choices=ROLE_CHOICES, default='CUSTOMER')
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='CUSTOMER')
 
     def __str__(self):
         return f"{self.user.username} - {self.get_role_display()}"
@@ -35,26 +26,209 @@ class Profile(models.Model):
         return self.role == 'ADMIN'
 
 
+# ----------------------------
+# Address
+# ----------------------------
 class Address(models.Model):
-    # Field name made lowercase.
-    address_id = models.IntegerField(db_column='Address_id', primary_key=True)
-    # Field name made lowercase.
-    address_line_1 = models.CharField(
-        db_column='Address_line_1', max_length=100)
-    # Field name made lowercase.
+    address_id = models.AutoField(db_column='Address_id', primary_key=True)
+    address_line_1 = models.CharField(db_column='Address_line_1', max_length=100)
     state = models.CharField(db_column='State', max_length=50)
-    # Field name made lowercase.
     country = models.CharField(db_column='Country', max_length=50)
-    # Field name made lowercase.
     zipcode = models.CharField(db_column='Zipcode', max_length=10)
 
     class Meta:
         managed = False
         db_table = 'Address'
-        verbose_name_plural = "Addresses"  # Fix admin pluralization
+        verbose_name_plural = "Addresses"
 
     def __str__(self):
         return f"{self.address_line_1} ({self.zipcode})"
+
+
+# ----------------------------
+# Customers
+# ----------------------------
+class Customers(models.Model):
+    customer_id = models.AutoField(db_column='Customer_id', primary_key=True)
+    first_name = models.CharField(db_column='First_name', max_length=50)
+    middle_name = models.CharField(db_column='Middle_name', max_length=50, blank=True, null=True)
+    last_name = models.CharField(db_column='Last_name', max_length=50)
+    phone = models.CharField(db_column='Phone', unique=True, max_length=15)
+
+    class Meta:
+        managed = False  # ✅ allow Django to manage model (creates proper AutoField)
+        db_table = 'Customers'
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+
+# ----------------------------
+# Employees
+# ----------------------------
+class Employees(models.Model):
+    employee_id = models.IntegerField(primary_key=True, db_column='Employee_id')
+    employee_name = models.CharField(max_length=100, db_column='Employee_name')
+    phone = models.CharField(max_length=15, unique=True, db_column='Phone')
+    supervises_employee = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        db_column='Supervises_Employee_id'
+    )
+    role = models.CharField(max_length=50, db_column='Role', default='Driver')
+
+    class Meta:
+        managed = False
+        db_table = 'Employees'
+
+    def __str__(self):
+        return f"{self.employee_name} ({self.role})"
+
+
+
+# ----------------------------
+# Vehicles
+# ----------------------------
+class Vehicles(models.Model):
+    vehicle_id = models.AutoField(db_column='Vehicle_id', primary_key=True)
+    registration_number = models.CharField(db_column='Registration_number', unique=True, max_length=20)
+    type = models.CharField(db_column='Type', max_length=10)
+
+    class Meta:
+        managed = False
+        db_table = 'Vehicles'
+
+    def __str__(self):
+        return f"{self.registration_number} ({self.type})"
+
+
+# ----------------------------
+# Restaurants
+# ----------------------------
+class Restaurants(models.Model):
+    restaurant_id = models.AutoField(db_column='Restaurant_id', primary_key=True)
+    name = models.CharField(db_column='Name', max_length=100)
+    address = models.ForeignKey(Address, models.DO_NOTHING, db_column='Address_id')
+    cuisine = models.CharField(db_column='Cuisine', max_length=50, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Restaurants'
+
+    def __str__(self):
+        return self.name
+
+
+# ----------------------------
+# Menu Items
+# ----------------------------
+class MenuItems(models.Model):
+    item_id = models.AutoField(db_column='Item_id', primary_key=True)
+    restaurant = models.ForeignKey(Restaurants, models.DO_NOTHING, db_column='Restaurant_id')
+    item_name = models.CharField(db_column='Item_Name', max_length=100)
+    description = models.CharField(db_column='Description', max_length=255, blank=True, null=True)
+    price = models.DecimalField(db_column='Price', max_digits=6, decimal_places=2)
+
+    class Meta:
+        managed = False
+        db_table = 'Menu_Items'
+
+    def __str__(self):
+        return self.item_name
+
+
+
+# ----------------------------
+# Payment Methods
+# ----------------------------
+class PaymentMethods(models.Model):
+    payment_id = models.AutoField(
+        db_column='Payment_id',
+        primary_key=True
+    )
+    customer = models.ForeignKey(
+        'Customers',
+        on_delete=models.CASCADE,
+        db_column='Customer_id'
+    )
+    total_spend = models.DecimalField(
+        db_column='Total_Spend',
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal('0.00')  # ✅ ensures non-null total
+    )
+    payment_type = models.CharField(
+        db_column='Payment_type',
+        max_length=20
+    )
+
+    class Meta:
+        managed = False  # ✅ keeps Django from trying to create this table again
+        db_table = 'Payment_Methods'
+        unique_together = (('customer', 'payment_type'),)  # ✅ ensures one per type per customer
+
+    def __str__(self):
+        return f"{self.payment_type} - {self.customer.first_name} (ID: {self.payment_id})"
+
+
+
+
+# ----------------------------
+# Orders
+# ----------------------------
+class Orders(models.Model):
+    order_id = models.AutoField(primary_key=True, db_column='Order_id')
+    customer = models.ForeignKey('Customers', on_delete=models.CASCADE, db_column='Customer_id')
+    restaurant = models.ForeignKey('Restaurants', on_delete=models.CASCADE, db_column='Restaurant_id')
+    payment = models.ForeignKey('PaymentMethods', on_delete=models.CASCADE, db_column='Payment_id')
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, db_column='Total_Price')
+    order_date = models.DateTimeField(auto_now_add=True, db_column='Order_Date')
+    delivery_status = models.CharField(max_length=20, default='Pending', db_column='Delivery_Status')
+
+    class Meta:
+        managed = False
+        db_table = 'Orders'
+
+    def __str__(self):
+        return f"Order #{self.order_id} - {self.delivery_status}"
+
+
+
+# ----------------------------
+# Order Items (FIXED - one order → many items)
+# ----------------------------
+class OrderItems(models.Model):
+    order = models.ForeignKey('Orders', on_delete=models.CASCADE, db_column='Order_id')
+    item = models.ForeignKey('MenuItems', on_delete=models.CASCADE, db_column='Item_id')
+    quantity = models.IntegerField(db_column='Quantity', default=1)
+
+    class Meta:
+        db_table = 'Order_Items'
+        managed = False  # since it's created directly in MySQL
+        unique_together = (('order', 'item'),)
+
+
+
+
+# ----------------------------
+# Order Assignment (driver + vehicle)
+# ----------------------------
+class OrderAssignment(models.Model):
+    order = models.OneToOneField(Orders, models.DO_NOTHING, db_column='Order_id', primary_key=True)
+    employee = models.ForeignKey(Employees, models.DO_NOTHING, db_column='Employee_id')
+    vehicle = models.ForeignKey(Vehicles, models.DO_NOTHING, db_column='Vehicle_id')
+    assignment_time = models.DateTimeField(db_column='Assignment_Time', auto_now_add=True, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Order_Assignment'
+
+    def __str__(self):
+        return f"Order {self.order.order_id} → {self.employee.name} ({self.vehicle.registration_number})"
+
+
 
 
 class CustomerAddresses(models.Model):
@@ -76,192 +250,4 @@ class CustomerAddresses(models.Model):
         verbose_name_plural = "Customer Addresses"
 
 
-class Customers(models.Model):
-    # Field name made lowercase.
-    customer_id = models.IntegerField(
-        db_column='Customer_id', primary_key=True)
-    # Field name made lowercase.
-    first_name = models.CharField(db_column='First_name', max_length=50)
-    # Field name made lowercase.
-    middle_name = models.CharField(
-        db_column='Middle_name', max_length=50, blank=True, null=True)
-    # Field name made lowercase.
-    last_name = models.CharField(db_column='Last_name', max_length=50)
-    # Field name made lowercase.
-    phone = models.CharField(db_column='Phone', unique=True, max_length=15)
 
-    class Meta:
-        managed = False
-        db_table = 'Customers'
-        verbose_name_plural = "Customers"
-
-    def __str__(self):
-        return f"{self.first_name} {self.last_name} (ID: {self.customer_id})"
-
-
-class Employees(models.Model):
-    # Field name made lowercase.
-    employee_id = models.IntegerField(
-        db_column='Employee_id', primary_key=True)
-    # Field name made lowercase.
-    employee_name = models.CharField(db_column='Employee_name', max_length=100)
-    # Field name made lowercase.
-    phone = models.CharField(db_column='Phone', unique=True, max_length=15)
-    # Field name made lowercase.
-    supervises_employee = models.ForeignKey(
-        'self', models.DO_NOTHING, db_column='Supervises_Employee_id', blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'Employees'
-        verbose_name_plural = "Employees"
-
-    def __str__(self):
-        return f"{self.employee_name} (ID: {self.employee_id})"
-
-
-class MenuItems(models.Model):
-    # Field name made lowercase.
-    item_id = models.IntegerField(db_column='Item_id', primary_key=True)
-    # Field name made lowercase.
-    restaurant = models.ForeignKey(
-        'Restaurants', models.DO_NOTHING, db_column='Restaurant_id')
-    # Field name made lowercase.
-    item_name = models.CharField(db_column='Item_Name', max_length=100)
-    # Field name made lowercase.
-    description = models.CharField(
-        db_column='Description', max_length=255, blank=True, null=True)
-    # Field name made lowercase.
-    price = models.DecimalField(
-        db_column='Price', max_digits=6, decimal_places=2)
-
-    class Meta:
-        managed = False
-        db_table = 'Menu_Items'
-
-    def __str__(self):
-        return self.item_name
-
-
-class OrderAssignment(models.Model):
-    # Field name made lowercase.
-    order = models.OneToOneField(
-        'Orders', models.DO_NOTHING, db_column='Order_id', primary_key=True)
-    # Field name made lowercase.
-    employee = models.ForeignKey(
-        Employees, models.DO_NOTHING, db_column='Employee_id')
-    # Field name made lowercase.
-    vehicle = models.ForeignKey(
-        'Vehicles', models.DO_NOTHING, db_column='Vehicle_id')
-    # Field name made lowercase.
-    assignment_time = models.DateTimeField(
-        db_column='Assignment_Time', blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'Order_Assignment'
-
-
-class OrderItems(models.Model):
-    # This table also has a composite primary key in SQL.
-    # We'll tell Django that 'order' is the key for ORM purposes.
-    # Field name made lowercase.
-    order = models.OneToOneField(
-        'Orders', models.DO_NOTHING, db_column='Order_id', primary_key=True)
-    # Field name made lowercase.
-    item = models.ForeignKey(MenuItems, models.DO_NOTHING, db_column='Item_id')
-    # Field name made lowercase.
-    quantity = models.IntegerField(db_column='Quantity')
-
-    class Meta:
-        managed = False
-        db_table = 'Order_Items'
-        unique_together = (('order', 'item'),)  # Represents the composite key
-
-
-class Orders(models.Model):
-    # Field name made lowercase.
-    order_id = models.IntegerField(db_column='Order_id', primary_key=True)
-    # Field name made lowercase.
-    customer = models.ForeignKey(
-        Customers, models.DO_NOTHING, db_column='Customer_id')
-    # Field name made lowercase.
-    restaurant = models.ForeignKey(
-        'Restaurants', models.DO_NOTHING, db_column='Restaurant_id')
-    # Field name made lowercase.
-    payment = models.ForeignKey(
-        'PaymentMethods', models.DO_NOTHING, db_column='Payment_id')
-    # Field name made lowercase.
-    total_price = models.DecimalField(
-        db_column='Total_Price', max_digits=10, decimal_places=2)
-    # Added Order_Date field based on your 'my_orders' page requirement
-    order_date = models.DateTimeField(
-        db_column='Order_Date', auto_now_add=True)
-
-    class Meta:
-        managed = False
-        db_table = 'Orders'
-
-    def __str__(self):
-        return f"Order #{self.order_id} by {self.customer.first_name}"
-
-
-class PaymentMethods(models.Model):
-    # Field name made lowercase.
-    payment_id = models.IntegerField(db_column='Payment_id', primary_key=True)
-    # Field name made lowercase.
-    customer = models.ForeignKey(
-        Customers, models.DO_NOTHING, db_column='Customer_id')
-    # Field name made lowercase.
-    total_spend = models.DecimalField(
-        db_column='Total_Spend', max_digits=10, decimal_places=2, blank=True, null=True)
-    # Field name made lowercase.
-    payment_type = models.CharField(db_column='Payment_type', max_length=20)
-
-    class Meta:
-        managed = False
-        db_table = 'Payment_Methods'
-        verbose_name_plural = "Payment Methods"
-
-    def __str__(self):
-        return f"{self.payment_type} (ID: {self.payment_id})"
-
-
-class Restaurants(models.Model):
-    # Field name made lowercase.
-    restaurant_id = models.IntegerField(
-        db_column='Restaurant_id', primary_key=True)
-    # Field name made lowercase.
-    name = models.CharField(db_column='Name', max_length=100)
-    # Field name made lowercase.
-    address = models.ForeignKey(
-        Address, models.DO_NOTHING, db_column='Address_id')
-    # Field name made lowercase.
-    cuisine = models.CharField(
-        db_column='Cuisine', max_length=50, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'Restaurants'
-        verbose_name_plural = "Restaurants"
-
-    def __str__(self):
-        return self.name
-
-
-class Vehicles(models.Model):
-    # Field name made lowercase.
-    vehicle_id = models.IntegerField(db_column='Vehicle_id', primary_key=True)
-    # Field name made lowercase.
-    registration_number = models.CharField(
-        db_column='Registration_number', unique=True, max_length=20)
-    # Field name made lowercase.
-    type = models.CharField(db_column='Type', max_length=10)
-
-    class Meta:
-        managed = False
-        db_table = 'Vehicles'
-        verbose_name_plural = "Vehicles"
-
-    def __str__(self):
-        return f"{self.registration_number} ({self.type})"

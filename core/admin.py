@@ -137,7 +137,7 @@ class MenuItemAdmin(ReadOnlyAdmin):
 class EmployeeAdmin(ReadOnlyAdmin):
     """Read-only admin for Employees."""
     list_display = ('employee_id', 'employee_name',
-                    'phone', 'supervises_employee')
+                    'phone', 'supervises_employee','role')
     search_fields = ('employee_name', 'phone')
 
 

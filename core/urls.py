@@ -21,6 +21,9 @@ urlpatterns = [
     path('cart/remove/<int:item_id>/',
          views.remove_from_cart, name='remove_from_cart'),
     path('cart/place-order/', views.place_order, name='place_order'),
+    path('cart/add/<int:item_id>/', views.add_to_cart, name='add_to_cart'),
+    path('cart/update/<int:item_id>/<str:action>/', views.update_quantity, name='update_quantity'),
+]
 
     # The 'switch_mode' path that caused the error has been removed.
-]
+
