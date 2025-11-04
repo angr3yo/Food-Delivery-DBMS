@@ -66,9 +66,10 @@ This project integrates restaurants, customers, orders, and delivery management 
 ## ⚙️ Setup Instructions
 
 ### 1️⃣ Clone the repository
-```bash
+
 git clone https://github.com/angr3yo/Food-Delivery-DBMS.git
 cd Food-Delivery-DBMS/fooddelivery_project
+
 2️⃣ Create & activate virtual environment
 python3 -m venv venv
 source venv/bin/activate     # (Mac/Linux)
