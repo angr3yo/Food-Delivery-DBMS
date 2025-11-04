@@ -13,11 +13,19 @@ This project integrates restaurants, customers, orders, and delivery management 
 - Add items to cart and place orders  
 - Select preferred payment method (Cash, Card, UPI, etc.)  
 - View order confirmation and driver assignment details  
+<img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/aa932004-37cb-4a63-a145-822e0706e572" />
+<img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/06c426ca-03ff-4709-b1e5-4c7e0bbd4b24" />
+<img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/f96585e5-4bd1-4a16-9b12-4bc01219586f" />
+<img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/c36b26d0-f326-4ce6-9018-7793db8e22da" />
+<img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/c284b2af-e3ac-4b58-bdaa-351f39aba28a" />
+<img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/1fba64fa-dcae-445a-814e-76e871198d10" />
+<img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/19c850f2-20a3-404d-b2c0-2c637de8adb0" />
 
 ### 🍽️ Restaurant Management
 - Add, edit, and manage restaurant menus  
 - Track orders and sales  
 - Monitor total spends from different payment types  
+<img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/749462c3-a36e-4652-adb9-72e808fe619c" />
 
 ### 🚗 Delivery System
 - Dynamic driver assignment using SQL **stored procedures**  
