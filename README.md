@@ -80,9 +80,9 @@ venv\Scripts\activate        # (Windows)`
 
 4️⃣ Configure database connection
 
-```In settings.py, update:
+In settings.py, update:
 
-DATABASES = {
+`DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'FoodDelivery',
@@ -91,14 +91,14 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '3306',
     }
-}```
+}`
 
-```5️⃣ Run migrations and start the server
-python manage.py migrate
-python manage.py runserver
+5️⃣ Run migrations and start the server
+`python manage.py migrate
+python manage.py runserver`
 
 
-Then visit: 👉 http://127.0.0.1:8000/```
+Then visit: 👉 http://127.0.0.1:8000/
 
 
 
