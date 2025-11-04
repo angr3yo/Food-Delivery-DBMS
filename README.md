@@ -103,7 +103,7 @@ In settings.py, update:
 
 5️⃣ Run migrations and start the server
 `python manage.py migrate`
-`python manage.py runserver`
+\n`python manage.py runserver`
 
 
 Then visit: 👉 http://127.0.0.1:8000/
