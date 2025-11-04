@@ -67,13 +67,13 @@ This project integrates restaurants, customers, orders, and delivery management 
 
 ### 1️⃣ Clone the repository
 
-`git clone https://github.com/angr3yo/Food-Delivery-DBMS.git
-cd Food-Delivery-DBMS/fooddelivery_project`
+`git clone https://github.com/angr3yo/Food-Delivery-DBMS.git  `
+`cd Food-Delivery-DBMS/fooddelivery_project`
 
 2️⃣ Create & activate virtual environment
-`python3 -m venv venv
-source venv/bin/activate     # (Mac/Linux)
-venv\Scripts\activate        # (Windows)`
+`python3 -m venv venv`
+`source venv/bin/activate     # (Mac/Linux)`
+`venv\Scripts\activate        # (Windows)`
 
 3️⃣ Install dependencies
 `pip install -r requirements.txt`
@@ -94,8 +94,8 @@ In settings.py, update:
 }`
 
 5️⃣ Run migrations and start the server
-`python manage.py migrate
-python manage.py runserver`
+`python manage.py migrate`
+`python manage.py runserver`
 
 
 Then visit: 👉 http://127.0.0.1:8000/
