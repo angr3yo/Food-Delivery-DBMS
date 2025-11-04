@@ -67,20 +67,20 @@ This project integrates restaurants, customers, orders, and delivery management 
 
 ### 1️⃣ Clone the repository
 
-git clone https://github.com/angr3yo/Food-Delivery-DBMS.git
-cd Food-Delivery-DBMS/fooddelivery_project
+`git clone https://github.com/angr3yo/Food-Delivery-DBMS.git
+cd Food-Delivery-DBMS/fooddelivery_project`
 
 2️⃣ Create & activate virtual environment
-python3 -m venv venv
+`python3 -m venv venv
 source venv/bin/activate     # (Mac/Linux)
-venv\Scripts\activate        # (Windows)
+venv\Scripts\activate        # (Windows)`
 
 3️⃣ Install dependencies
-pip install -r requirements.txt
+`pip install -r requirements.txt`
 
 4️⃣ Configure database connection
 
-In settings.py, update:
+```In settings.py, update:
 
 DATABASES = {
     'default': {
@@ -91,43 +91,16 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '3306',
     }
-}
+}```
 
-5️⃣ Run migrations and start the server
+```5️⃣ Run migrations and start the server
 python manage.py migrate
 python manage.py runserver
 
 
-Then visit: 👉 http://127.0.0.1:8000/
-
-📚 Sample SQL Setup
-CREATE DATABASE FoodDelivery;
-USE FoodDelivery;
+Then visit: 👉 http://127.0.0.1:8000/```
 
 
-You can import your schema & data via:
-
-mysql -u root -p FoodDelivery < fooddelivery_schema.sql
-
-🎯 Example Workflow
-
-Customer logs in
-
-Adds items from a restaurant to cart
-
-Chooses a payment type and places the order
-
-SQL procedure assigns a driver and vehicle
-
-Order confirmation page shows:
-
-Driver details
-
-Payment info
-
-Item-wise breakdown
-
-Total cost
 
 🧩 Folder Structure
 fooddelivery_project/
