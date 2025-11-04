@@ -103,20 +103,20 @@ Then visit: 👉 http://127.0.0.1:8000/
 
 
 🧩 Folder Structure
-fooddelivery_project/
+`fooddelivery_project/
 │
 ├── core/                     # Main Django app (views, models, urls)
 ├── templates/                # HTML templates
 ├── static/                   # CSS, JS, images
 ├── manage.py
 ├── requirements.txt
-└── README.md
+└── README.md`
 
 🧑‍💻 Author
 
-Nithya Gauri 
+`Nithya Gauri 
 Pooja Viswanathan
-📍 PES University
+📍 PES University`
 
 
 🪪 License
