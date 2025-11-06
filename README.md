@@ -165,7 +165,7 @@ Then visit: 👉 http://127.0.0.1:8000/
 🧑‍💻 Authors
 
 `Nithya Gauri` 
-`Pooja Viswanathan`
+`Pooja`
 `📍 PES University`
 
 
